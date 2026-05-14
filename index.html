@@ -363,13 +363,12 @@
         class="login-input"
         placeholder="パスワードを入力してください"
         autocomplete="current-password"
-        onkeydown="if(event.key==='Enter') doLogin()"
       >
-      <button class="toggle-pw" onclick="togglePw()" tabindex="-1" title="表示切替">👁</button>
+      <button class="toggle-pw" id="toggle-pw-btn" tabindex="-1" title="表示切替">👁</button>
     </div>
     <div class="error-msg" id="error-msg"></div>
 
-    <button class="login-btn" onclick="doLogin()">ログイン &nbsp;→</button>
+    <button class="login-btn" id="login-btn">ログイン &nbsp;→</button>
 
     <div class="login-hint">社内スタッフ専用システムです</div>
   </div>
@@ -392,7 +391,7 @@
           <div class="user-role">ログイン中</div>
         </div>
       </div>
-      <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+      <button class="logout-btn" id="logout-btn">ログアウト</button>
     </div>
   </div>
 
@@ -409,7 +408,7 @@
       <span class="badge badge-active">● 稼働中</span>
     </a>
 
-    <div class="sys-card" onclick="openCommandCenter()" style="cursor:pointer;">
+    <div class="sys-card" id="cmd-center-card" style="cursor:pointer;">
       <div class="card-icon icon-gold">🖥️</div>
       <div class="card-body">
         <div class="card-name">Command Center</div>
@@ -418,7 +417,7 @@
       <span class="badge badge-desktop">● デスクトップ</span>
     </div>
 
-    <div class="sys-card" onclick="openKeiriSystem()" style="cursor:pointer;">
+    <div class="sys-card" id="keiri-card" style="cursor:pointer;">
       <div class="card-icon icon-green">📊</div>
       <div class="card-body">
         <div class="card-name">経理報告システム</div>
@@ -557,25 +556,25 @@
 </div>
 
 <script>
-  const CORRECT_PW = 'mrck1338';
+document.addEventListener('DOMContentLoaded', function() {
+  var PW = 'mrck1338';
 
-  function togglePw() {
-    const el = document.getElementById('pw-input');
-    el.type = el.type === 'password' ? 'text' : 'password';
+  function showPortal() {
+    document.getElementById('login-screen').classList.add('hidden');
+    var p = document.getElementById('portal-screen');
+    p.classList.add('visible');
+    setTimeout(function() { p.classList.add('fade-in'); }, 30);
   }
 
   function doLogin() {
-    const input = document.getElementById('pw-input');
-    const err = document.getElementById('error-msg');
+    var input = document.getElementById('pw-input');
+    var err = document.getElementById('error-msg');
     input.classList.remove('error');
-    if (input.value === CORRECT_PW) {
+    if (input.value === PW) {
       err.textContent = '';
-      document.getElementById('login-screen').classList.add('hidden');
-      const portal = document.getElementById('portal-screen');
-      portal.classList.add('visible');
-      setTimeout(() => portal.classList.add('fade-in'), 30);
+      showPortal();
       sessionStorage.setItem('mrck_auth', '1');
-      const now = new Date();
+      var now = new Date();
       document.getElementById('login-time-label').textContent =
         'ログイン: ' + now.toLocaleString('ja-JP');
     } else {
@@ -586,8 +585,12 @@
     }
   }
 
-  function doLogout() {
-    sessionStorage.removeItem('mrck_auth');
-    document.getElementById('portal-screen').classList.remove('fade-in');
-    setTimeout(() => {
-      document.getElementById('portal-screen').clas
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+
+  document.getElementById('pw-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  document.getElementById('toggle-pw-btn').addEventListener('click', function() {
+    var el = document.getElementById('pw-input');
+    el.type = el.type === 'password' ? '
