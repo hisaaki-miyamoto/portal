@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>株式会社丸近｜業務ポータル</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@400;700&family=Outfit:wght@400;600;800&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0b1a0e;
+      --card: rgba(14, 32, 16, 0.92);
+      --blue: #6db86b;
+      --gold: #b8d96b;
+      --text: #d8eecc;
+      --muted: #7aaa72;
+      --border: rgba(120, 200, 100, 0.15);
+      --success: #8fd97a;
+      --danger: #c87a5a;
+      --green-glow: rgba(100, 190, 80, 0.18);
+      --green-bright: #a0d870;
+      --green-light: #c8f0a0;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(at 15% 25%, rgba(80, 160, 60, 0.18) 0, transparent 55%),
+        radial-gradient(at 85% 75%, rgba(60, 130, 40, 0.10) 0, transparent 55%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0,0,0,0.04) 3px,
+          rgba(0,0,0,0.04) 4px
+        );
+    }
+
+    /* ========== LOGIN SCREEN ========== */
+    #login-screen {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+      background: var(--bg);
+      background-image:
+        radial-gradient(at 15% 25%, rgba(80,160,60,0.18) 0, transparent 55%),
+        radial-gradient(at 85% 75%, rgba(60,130,40,0.10) 0, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid rgba(120,200,90,0.25);
+      border-radius: 20px;
+      padding: 52px 56px 44px;
+      width: 420px;
+      max-width: 92vw;
+      text-align: center;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 60px rgba(80,180,60,0.12), 0 24px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(160,220,100,0.1);
+    }
+
+    .login-company {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--green-light);
+      letter-spacing: 2px;
+      margin-bottom: 44px;
+      text-shadow: 0 0 20px rgba(160, 230, 120, 0.5);
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+
+    .login-label {
+      text-align: left;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    .login-input-wrap { position: relative; margin-bottom: 12px; }
+
+    .login-input {
+      width: 100%;
+      padding: 14px 48px 14px 16px;
+      background: rgba(60, 120, 40, 0.08);
+      border: 1px solid rgba(120,200,90,0.2);
+      border-radius: 10px;
+      color: var(--green-light);
+      font-size: 15px;
+      font-family: 'Noto Sans JP', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      letter-spacing: 3px;
+    }
+    .login-input::placeholder { color: rgba(120, 180, 90, 0.35); letter-spacing: 1px; }
+    .login-input:focus {
+      border-color: var(--green-bright);
+      box-shadow: 0 0 0 3px rgba(120,200,80,0.12), 0 0 16px rgba(120,200,80,0.08);
+    }
+    .login-input.error { border-color: var(--danger); animation: shake 0.3s ease; }
+
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      font-size: 16px; line-height: 1; padding: 0; opacity: 0.6;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .error-msg {
+      font-size: 12px; color: #c87a5a;
+      min-height: 18px; margin-bottom: 16px; text-align: left;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: rgba(90, 170, 60, 0.85);
+      color: #0b1a0e;
+      border: 1px solid rgba(140,220,90,0.4);
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      letter-spacing: 3px;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(80,170,50,0.25), 0 0 30px rgba(100,200,60,0.1);
+    }
+    .login-btn:hover {
+      background: rgba(110, 190, 70, 0.95);
+      box-shadow: 0 4px 28px rgba(80,170,50,0.4), 0 0 40px rgba(100,200,60,0.15);
+    }
+    .login-btn:active { transform: scale(0.98); }
+
+    .login-hint {
+      margin-top: 28px;
+      font-size: 11px;
+      color: rgba(120, 170, 90, 0.4);
+      letter-spacing: 1px;
+    }
+
+    /* ========== PORTAL SCREEN ========== */
+    #portal-screen {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #portal-screen.visible { display: block; }
+    #portal-screen.fade-in { opacity: 1; }
+
+    .portal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 24px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .portal-brand {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green-light);
+      letter-spacing: 3px;
+      text-shadow: 0 0 14px rgba(160,230,120,0.4);
+    }
+
+    .portal-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: rgba(59,130,246,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: var(--blue);
+    }
+
+    .user-name-text { font-size: 14px; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    .portal-clock {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .portal-clock span { color: var(--text); font-weight: 600; }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin: 28px 0 12px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .sys-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      backdrop-filter: blur(10px);
+    }
+    .sys-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .sys-card.active { border-color: var(--blue); box-shadow: 0 0 0 1px rgba(59,130,246,0.3); }
+    .sys-card.active:hover { box-shadow: 0 8px 32px rgba(59,130,246,0.2); }
+    .sys-card.planned { opacity: 0.6; cursor: default; }
+    .sys-card.planned:hover { transform: none; box-shadow: none; }
+
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .icon-blue { background: rgba(59,130,246,0.15); }
+    .icon-green { background: rgba(34,197,94,0.15); }
+    .icon-gold { background: rgba(245,158,11,0.15); }
+    .icon-purple { background: rgba(168,85,247,0.15); }
+    .icon-coral { background: rgba(239,68,68,0.12); }
+    .icon-gray { background: rgba(148,163,184,0.1); }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+    .badge-active { background: rgba(34,197,94,0.15); color: var(--success); }
+    .badge-planned { background: rgba(245,158,11,0.12); color: var(--gold); }
+    .badge-soon { background: rgba(148,163,184,0.1); color: var(--muted); }
+
+    .portal-footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: rgba(148,163,184,0.4);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 600px) {
+      #portal-screen { padding: 14px; }
+      .portal-header { flex-wrap: wrap; gap: 10px; }
+      .card-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== ログイン画面 ========== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-company">株式会社 丸近｜業務ポータル</div>
+
+    <div class="login-label">パスワード</div>
+    <div class="login-input-wrap">
+      <input
+        type="password"
+        id="pw-input"
+        class="login-input"
+        placeholder="パスワードを入力してください"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()"
+      >
+      <button class="toggle-pw" onclick="togglePw()" tabindex="-1" title="表示切替">👁</button>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+
+    <button class="login-btn" onclick="doLogin()">ログイン &nbsp;→</button>
+
+    <div class="login-hint">社内スタッフ専用システムです</div>
+  </div>
+</div>
+
+<!-- ========== ポータル画面 ========== -->
+<div id="portal-screen">
+
+  <!-- ヘッダー -->
+  <div class="portal-header">
+    <div class="portal-brand">株式会社 丸近｜業務ポータル</div>
+
+    <div style="display:flex; align-items:center; gap:20px;">
+      <div class="portal-clock">
+        <span id="clock-date"></span>&nbsp;&nbsp;<span id="clock-time"></span>
+      </div>
+      <div class="portal-user">
+        <div class="user-avatar">丸</div>
+        <div>
+          <div class="user-name-text">丸近 スタッフ</div>
+          <div class="user-role">ログイン中</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+    </div>
+  </div>
+
+  <!-- 日常業務セクション -->
+  <div class="section-title">日常業務</div>
+  <div class="card-grid">
+
+    <a href="https://maruchika.streamlit.app/" target="_blank" class="sys-card active">
+      <div class="card-icon icon-blue">👥</div>
+      <div>
+        <div class="card-name">顧客対応 CRM</div>
+        <div class="card-desc">対応記録の入力・履歴検索・ダッシュボード</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+    <div class="sys-card" onclick="openCommandCenter()" style="cursor:pointer;">
+      <div class="card-icon icon-gold">🖥️</div>
+      <div>
+        <div class="card-name">Command Center</div>
+        <div class="card-desc">タスク・スケジュール・通知の統合ダッシュボード</div>
+      </div>
+      <span class="badge badge-active">● デスクトップ版</span>
+    </div>
+
+    <div class="sys-card" onclick="openKeiriSystem()" style="cursor:pointer;">
+      <div class="card-icon icon-green">📊</div>
+      <div>
+        <div class="card-name">経理報告システム</div>
+        <div class="card-desc">月次売上レポート自動集計・CSV取込</div>
+      </div>
+      <span class="badge badge-active">● デスクトップ版</span>
+    </div>
+
+  </div>
+
+  <!-- EC・受注管理セクション -->
+  <div class="section-title">EC・受注管理</div>
+  <div class="card-grid">
+
+    <a href="https://secure.epsilon.jp/login.cgi?next_url=https%3A%2F%2Fsecure.epsilon.jp%2Fclient_area%2Fcrm_inquiry.cgi%3Fmode%3Dnew" target="_blank" class="sys-card active">
+      <div class="card-icon icon-blue">💳</div>
+      <div>
+        <div class="card-name">GMOイプシロン</div>
+        <div class="card-desc">決済照会・新規対応入力（経理CSVダウンロード）</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+    <a href="https://mainmenu.rms.rakuten.co.jp/" target="_blank" class="sys-card active">
+      <div class="card-icon icon-coral">🛒</div>
+      <div>
+        <div class="card-name">楽天市場 RMS</div>
+        <div class="card-desc">受注管理・商品登録・店舗運営</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+    <a href="https://console.makeshop.jp/dashboard?shopId=maruchika" target="_blank" class="sys-card active">
+      <div class="card-icon icon-purple">🏪</div>
+      <div>
+        <div class="card-name">Makeshop</div>
+        <div class="card-desc">自社ECショップ管理・注文確認</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+    <a href="https://order.goqsystem.com/goq21/dashboard/" target="_blank" class="sys-card active">
+      <div class="card-icon icon-green">📦</div>
+      <div>
+        <div class="card-name">GoQシステム</div>
+        <div class="card-desc">受注一元管理・出荷処理・在庫連携</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+  </div>
+
+  <!-- 経理・財務セクション -->
+  <div class="section-title">経理・財務</div>
+  <div class="card-grid">
+
+    <a href="https://billpay.rakuten.co.jp/login" target="_blank" class="sys-card active">
+      <div class="card-icon icon-gold">🏦</div>
+      <div>
+        <div class="card-name">楽天銀行 BillPay</div>
+        <div class="card-desc">請求書払い・振込・入出金明細の確認</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+  </div>
+
+  <!-- 外部サービスセクション -->
+  <div class="section-title">外部サービス</div>
+  <div class="card-grid">
+
+    <a href="https://viewer.civ-cloud.jp/signin" target="_blank" class="sys-card active">
+      <div class="card-icon icon-coral">📷</div>
+      <div>
+        <div class="card-name">USEN 防犯カメラ</div>
+        <div class="card-desc">店舗・施設の遠隔映像モニタリング</div>
+      </div>
+      <span class="badge badge-active">● 稼働中</span>
+    </a>
+
+  </div>
+
+  <!-- 管理・経営セクション -->
+  <div class="section-title">管理・経営</div>
+  <div class="card-grid">
+
+    <a href="https://maruchika.streamlit.app/" target="_blank" class="sys-card active">
+      <div class="card-icon icon-purple">📈</div>
+      <div>
+        <div class="card-name">経営ダッシュボード</div>
+        <div class="card-desc">CRM内「経営者向けダッシュボード」で確認</div>
+      </div>
+      <span class="badge badge-active">● CRM内</span>
+    </a>
+
+    <div class="sys-card planned">
+      <div class="card-icon icon-coral">🚚</div>
+      <div>
+        <div class="card-name">在庫・発注管理</div>
+        <div class="card-desc">在庫確認・発注状況のトラッキング</div>
+      </div>
+      <span class="badge badge-planned">◐ 計画中</span>
+    </div>
+
+    <div class="sys-card planned">
+      <div class="card-icon icon-gray">👤</div>
+      <div>
+        <div class="card-name">人事・シフト管理</div>
+        <div class="card-desc">スタッフ情報・シフト表・勤怠管理</div>
+      </div>
+      <span class="badge badge-soon">○ 未定</span>
+    </div>
+
+  </div>
+
+  <div class="portal-footer">
+    <span>© 2026 株式会社丸近 — 業務ポータル v1.1</span>
+    <span id="login-time-label"></span>
+  </div>
+
+</div>
+
+<script>
+  const CORRECT_PW = 'mrck1338';
+
+  // ── パスワード表示切替 ──
+  function togglePw() {
+    const el = document.getElementById('pw-input');
+    el.type = el.type === 'password' ? 'text' : 'password';
+  }
+
+  // ── ログイン処理 ──
+  function doLogin() {
+    const input = document.getElementById('pw-input');
+    const err = document.getElementById('error-msg');
+    input.classList.remove('error');
+
+    if (input.value === CORRECT_PW) {
+      err.textContent = '';
+      document.getElementById('login-screen').classList.add('hidden');
+      const portal = document.getElementById('portal-screen');
+      portal.classList.add('visible');
+      setTimeout(() => portal.classList.add('fade-in'), 30);
+      sessionStorage.setItem('mrck_auth', '1');
+      const now = new Date();
+      document.getElementById('login-time-label').textContent =
+        'ログイン: ' + now.toLocaleString('ja-JP');
+    } else {
+      err.textContent = 'パスワードが正しくありません';
+      input.classList.add('error');
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  // ── ログアウト処理 ──
+  function doLogout() {
+    sessionStorage.removeItem('mrck_auth');
+    document.getElementById('portal-screen').classList.remove('fade-in');
+    setTimeout(() => {
+      document.getElementById('portal-screen').classList.remove('visible');
+      const loginScreen = document.getElementById('login-screen');
+      loginScreen.classList.remove('hidden');
+      document.getElementById('pw-input').value = '';
+      document.getElementById('error-msg').textContent = '';
+    }, 300);
+  }
+
+  // ── Command Center 案内 ──
+  function openCommandCenter() {
+    alert('Command Center はデスクトップアプリです。\nアプリを直接起動してご利用ください。');
+  }
+
+  // ── 経理報告システム 案内 ──
+  function openKeiriSystem() {
+    alert('経理報告システムはローカル自動化スクリプトです。\nPC上の「monthly_auto.py」または「rakuten_auto.py」を実行してください。');
+  }
+
+  // ── 時計 ──
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock-date').textContent =
+      now.toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit', weekday:'short' });
+    document.getElementById('clock-time').textContent =
+      now.toLocaleTimeString('ja-JP');
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ── セッション維持（同タブ内でリロードしても維持） ──
+  if (sessionStorage.getItem('mrck_auth') === '1') {
+    document.getElementById('login-screen').classList.add('hidden');
+    const portal = document.getElementById('portal-screen');
+    portal.classList.add('visible');
+    setTimeout(() => portal.classList.add('fade-in'), 30);
+  }
+</script>
+
+</body>
+</html>
