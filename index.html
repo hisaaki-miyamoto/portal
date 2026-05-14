@@ -556,7 +556,6 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
   var PW = 'mrck1338';
 
   function showPortal() {
@@ -585,12 +584,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  document.getElementById('login-btn').addEventListener('click', doLogin);
+  function doLogout() {
+    sessionStorage.removeItem('mrck_auth');
+    var p = document.getElementById('portal-screen');
+    p.classList.remove('fade-in');
+    setTimeout(function() {
+      p.classList.remove('visible');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('pw-input').value = '';
+      document.getElementById('error-msg').textContent = '';
+    }, 300);
+  }
 
-  document.getElementById('pw-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') doLogin();
-  });
-
-  document.getElementById('toggle-pw-btn').addEventListener('click', function() {
-    var el = document.getElementById('pw-input');
-    el.type = el.type === 'password' ? '
+  f
